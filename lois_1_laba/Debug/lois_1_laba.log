@@ -1,0 +1,4 @@
+﻿  Main.cpp
+D:\lois_1_laba\lois_1_laba\Main.cpp(16,20): warning C4018:  <: несоответствие типов со знаком и без знака
+D:\lois_1_laba\lois_1_laba\Main.cpp(51,20): warning C4018:  <: несоответствие типов со знаком и без знака
+  lois_1_laba.vcxproj -> D:\lois_1_laba\lois_1_laba\Debug\lois_1_laba.exe
