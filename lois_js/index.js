@@ -1,10 +1,6 @@
 
 var symbol = "ABCDEFGHIGKLMNOPQRSTUVWXYZ";
 
-function isSymbol (a) {
-	return symbol.includes(a);
-}
-
 function isDis (str) {
 	let answer = true;
 	for (let i = 0; i < str.length - 2; i++) {
@@ -53,15 +49,17 @@ function parse(str) {
 			skobka_close++;
 		if (str[i] != '(' && str[i] != ')' &&
 			str[i] != '&' && str[i] != '|' && str[i] != '!' &&
-			symbol.includes(str[i])) {
-			answer = false;
+			!symbol.includes(str[i])) {
+			return false;
 		}
 
 	}
 	if (skobka_open != skobka_close)
-		answer = false;
+		return false;
 
 	answer = isDis(str);
+	if(!answer)
+		return false;
 
 	let bigset = new Set();
 	let i = 0;
@@ -70,6 +68,8 @@ function parse(str) {
 		let second = str.includes(')');
 		let con = str.substr(first, second - first + 1);
 		answer = isCon(con);
+		if(!answer)
+			return false;
 		bigset.add(str_to_set(con));
 		str = str.substr(second - first + 1);
 		if (str[0] == '|')
