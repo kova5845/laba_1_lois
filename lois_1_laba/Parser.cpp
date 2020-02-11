@@ -1,21 +1,17 @@
-#include <iostream>
-#include <string>
-
-using namespace std;
-
-//class Dis {
-//	Con* con;
+//#include <iostream>
+//#include <string>
+//#include <set>
+//#include "Parser.h"
 //
+//using namespace std;
 //
-//};
+//set<string> str_to_set(string str)
+//{
+//	return set<string>();
+//}
 //
-//class Con {
-//	string symbols;
-//
-//
-//};
-//
-//class Formula {
-//
-//};
+//bool parse(string str)
+//{
+//	return false;
+//}
 
