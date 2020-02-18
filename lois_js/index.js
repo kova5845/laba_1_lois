@@ -1,29 +1,41 @@
 
 var symbol = "ABCDEFGHIGKLMNOPQRSTUVWXYZ";
+var answer = true;
 
 function isDis (str) {
-	let answer = true;
-	for (let i = 0; i < str.length - 2; i++) {
-		if (str[i] == ')' && str[i + 2] == '(') {
-			if (str[i + 1] != '|')
+	for (let i = 0; i < str.length; i++) {
+		if ( str[i] == ')' ) {
+			if ( i != str.length - 1 && str[i + 1] != '|' )
+				answer = false;
+		}
+		if ( str[i] == '|' ) {
+			if ( str[i + 1] != '(' ) 
 				answer = false;
 		}
 	}
-	return answer;
 }
 
 function isCon (str) {
-	let answer = true;
-	for (let i = 0; i < str.length - 2; i++) {
-		if (symbol.includes(str[i]) && (  symbol.includes(str[i+2]) || str[i+2] == '!'  )) {
-			if (str[i + 1] != '&')
+	for (let i = 0; i < str.length ; i++) {
+		if (str[i] == '('){
+			if ( !symbol.includes(str[i + 1]) && str[i + 1] != '!') {
 				answer = false;
+			}
+		}
+		if (str[i] == '!'){
+			if ( !symbol.includes(str[i + 1]) ) {
+				answer = false;
+			}
+		}
+		if ( symbol.includes(str[i]) ){
+			if ( str[i + 1] != ')' && str[i + 1] != '&') {
+				answer = false;
+			}
 		}
 	}
-	return answer;
 }
 
-function str_to_set(con) {
+function str_to_bigset(con) {
 	let set_con = new Set();
 	for (let i = 0; i < con.length; i++) {
 		if (symbol.includes(con[i])) {
@@ -37,9 +49,55 @@ function str_to_set(con) {
 	return set_con;
 }
 
-function parse(str) {
+function str_to_smallset(con) {
+	let set_con = new Set();
+	for (let i = 0; i < con.length; i++) {
+		if (symbol.includes(con[i])) {
+			set_con.add(con.substr(i, 1));
+		}
+	}
 
-	let answer = true;
+	return set_con;
+}
+
+function is_equal(set1, set2){
+	for(let i of set1){
+		if(!set2.has(i))
+			return false;
+	}
+	for(let i of set2){
+		if(!set1.has(i))
+			return false;
+	}
+	return true;
+}
+
+function is_repeat(arr) {
+	for(let i = 0; i < arr.length; i++) {
+		for(let j = 0; j < arr.length; j++) {
+			if(i != j){
+				if (!is_equal(arr[i], arr[j]))
+					answer = false;
+			}
+		}
+	}
+}
+
+function is_not_repeat(arr) {
+	for(let i = 0; i < arr.length; i++) {
+		for(let j = 0; j < arr.length; j++) {
+			if(i != j){
+				if (is_equal(arr[i], arr[j]))
+					answer = false;
+			}
+		}
+	}
+}
+
+function parse(str) {
+	answer = true;
+
+	str = str.replace(/\s+/g, '');
 	let skobka_open = 0;
 	let skobka_close = 0;
 	for (let i = 0; i < str.length; i++) {
@@ -50,33 +108,41 @@ function parse(str) {
 		if (str[i] != '(' && str[i] != ')' &&
 			str[i] != '&' && str[i] != '|' && str[i] != '!' &&
 			!symbol.includes(str[i])) {
-			return false;
+			answer = false;
+			break;
 		}
-
 	}
-	if (skobka_open != skobka_close)
-		return false;
+	if (skobka_open != skobka_close){
+		answer = false;
+		document.getElementById("lab").innerHTML = answer;
+		return answer;
+	}
 
-	answer = isDis(str);
-	if(!answer)
-		return false;
+	isDis(str);
 
-	let bigset = new Set();
+	let bigset = new Array();
+	let smallset = new Array();
 	let i = 0;
-	while (str.length != 0 || i < 5) {
-		let first = str.includes('(');
-		let second = str.includes(')');
+	while (str.length > 0) {
+		let first = str.indexOf('(');
+		let second = str.indexOf(')');
 		let con = str.substr(first, second - first + 1);
-		answer = isCon(con);
-		if(!answer)
-			return false;
-		bigset.add(str_to_set(con));
-		str = str.substr(second - first + 1);
+		isCon(con);
+		bigset.push(str_to_bigset(con));
+		smallset.push(str_to_smallset(con));
+		str = str.substr(second - first + 1, str.length);
 		if (str[0] == '|')
 			str = str.substr(1);
 		i++;
 	}
 
-	alert(answer);
+	is_repeat(smallset);
+	is_not_repeat(bigset);
+
+	document.getElementById("lab").innerHTML = answer;
+	//alert(answer);
 	return answer;
 }
+
+
+// (A&B)|(A&!B)
