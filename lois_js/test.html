@@ -4,14 +4,18 @@
 	<title>Тест</title>
 	<meta charset="utf-8">
 	<script type="text/javascript" src="test.js"></script>
+	<script type="text/javascript" src="index.js"></script>
 </head>
 <body>
-	<h1>Тест</h1>
+	<input type="button" name="buttonStart" value="Начать тест" onclick="generate_formula (document.getElementById('formula').value)">
+	<br><br>
 	<label id="formula"></label>
 	<br><br>
-	<input type="button" name="buttonYes" value="Да" onclick="generate_formula (document.getElementById('formula').value)">
-	<input type="button" name="buttonNo" value="Нет" onclick="generate_formula (document.getElementById('formula').value)">
+	<input type="button" name="buttonYes" value="Да" onclick="yes ()">
+	<input type="button" name="buttonNo" value="Нет" onclick="no ()">
 	<br><br>
-	<a href="index.html">Проверить формулу</a>
+	Количество правильных ответов: <label id="yes">0</label><br>
+	Количество неправильных ответов: <label id="no">0</label><br>
+	<p><a href="index.html">Проверить формулу</a></p>
 </body>
 </html>

@@ -114,7 +114,6 @@ function parse(str) {
 	}
 	if (skobka_open != skobka_close){
 		answer = false;
-		document.getElementById("lab").innerHTML = answer;
 		return answer;
 	}
 
@@ -139,10 +138,12 @@ function parse(str) {
 	is_repeat(smallset);
 	is_not_repeat(bigset);
 
-	document.getElementById("lab").innerHTML = answer;
-	//alert(answer);
 	return answer;
 }
 
+function write_answer(str){
+	parse(str);
+	document.getElementById("lab").innerHTML = answer;
+}
 
 // (A&B)|(A&!B)
