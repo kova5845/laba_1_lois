@@ -1,3 +1,10 @@
+// Лабораторная работа 1 по дисциплине ЛОИС
+// Выполнена студентом группы 721701 БГУИР Коваленко Алексеем Васильевичем
+// Проверить является ли формула СДНФ
+// 24.02.2020
+//
+// https://learn.javascript.ru автор Коваленко Алексей
+//
 
 var yes_number = 0;
 var no_number = 0;
@@ -71,8 +78,8 @@ function generate_formula() {
 		if(table[i][col - 1] == 1)
 			formula += arr_str[i - 1] + "|";
 	}
-	formula += "()";
-	formula = formula.replace("|()", "");
+	formula += "*";
+	formula = formula.replace("|*", "");
 	formula = error(formula);
 	document.getElementById("formula").innerHTML = formula;
 	answer = parse(formula);
