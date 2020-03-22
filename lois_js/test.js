@@ -8,8 +8,8 @@
 
 var yes_number = 0;
 var no_number = 0;
-answer = true;
 var symbols = "ABCDEFGHIGKLMNOPQRSTUVWXYZ";
+var answer = true;
 
 
 function toBinaryString(str, number_of_var){
@@ -19,13 +19,17 @@ function toBinaryString(str, number_of_var){
 	return str;
 }
 
-function arr_to_str(arr) {
-	str = "(";
-	for(let i = 0; i < arr.length - 1; i++){
-		str += arr[i] + "&";
+function arr_to_str(arr, delimeter) {
+	
+	let str = ""
+	for (let i = 0; i < arr.length - 1; i++){
+		str += "(";
 	}
-	str += ")";
-	str = str.replace("&)", ")");
+	str += arr[0];
+	for(let i = 1; i < arr.length; i++){
+		str += delimeter + arr[i] + ")"
+	}
+
 	return str;
 }
 
@@ -39,7 +43,7 @@ function error(formula) {
 }
 
 function generate_formula() {
-	symbols = "ABCDEFGHIGKLMNOPQRSTUVWXYZ";
+	symbol = "ABCDEFGHIGKLMNOPQRSTUVWXYZ";
 	let number_of_var = Math.floor(Math.random()*3) + 2;
 	let row = Math.pow(2, number_of_var) + 1;
 	let col = number_of_var + 1;
@@ -59,8 +63,8 @@ function generate_formula() {
 		table[i][col - 1] = Math.floor(Math.random()*2);
 	}
 	for(let i = 0; i < col; i++){
-		table[0][i] = symbols[Math.floor(Math.random()*symbols.length)];
-		symbols = symbols.replace(table[0][i], '');
+		table[0][i] = symbol[Math.floor(Math.random()*symbol.length)];
+		symbol = symbol.replace(table[0][i], '');
 	}
 	for(let i = 1; i < row; i++){
 		for(let j = 0; j < col - 1; j++){
@@ -71,18 +75,22 @@ function generate_formula() {
 	}
 	let arr_str = new Array();
 	for(let i = 1; i < row; i++){
-		arr_str.push(arr_to_str(table[i]));
+		if(table[i][table[i].length - 1] == 1){
+			table[i].pop()
+			arr_str.push(arr_to_str(table[i], "&"));
+		}
 	}
 	let formula = "";
-	for(let i = 1; i < row; i++){
-		if(table[i][col - 1] == 1)
-			formula += arr_str[i - 1] + "|";
+	let i;
+	formula = arr_to_str(arr_str, "|")
+	fornula = formula.replace(/\s+/g,'');
+	for(let i = 0; i < symbols.length; i++){
+		let neg = "!" + symbols[i];
+		formula = formula.replace(new RegExp(neg, 'g'), "(" + neg + ")")
 	}
-	formula += "*";
-	formula = formula.replace("|*", "");
 	formula = error(formula);
 	document.getElementById("formula").innerHTML = formula;
-	answer = parse(formula);
+	answer = parse(formula)
 }
 
 function yes () {
