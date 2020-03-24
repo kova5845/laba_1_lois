@@ -41,6 +41,8 @@ function str_to_smallset(con) {
 	let set_con = new Set();
 	for (let i = 0; i < con.length; i++) {
 		if (symbols.includes(con[i])) {
+			if(set_con.has(con.substr(i, 1)))
+				set_con.add('1');
 			set_con.add(con.substr(i, 1));
 		}
 	}
@@ -114,11 +116,34 @@ function deleteSkobka(str){
 	return str;
 }
 
+function isOneSymbol(str){
+	if(str.replace(/[A-Z]/,'').length == 0)
+		return true;
+	else if(str.replace(/\(![A-Z]\)/,'').length == 0)
+		return true;
+	else 
+		return false;
+}
+
+function isTwoSymbol(str){
+	for (let i = 0; i < symbols.length; i++){
+		if(str.replace(new RegExp(symbols[i], 'g'), '').length + 2 == str.length)
+			if (str.replace(/\([A-Z]\|\(![A-Z]\)\)|\(\(![A-Z]\)\|[A-Z]\)/,'').length == 0)
+				return true;
+	}
+	return false;
+}
+
 function parse(str) {
 	console.log(str);
 	if (str.replace('f', '') != str){
 		return false;
 	}
+	if (isOneSymbol(str)){
+		return true;
+	}
+	if(isTwoSymbol(str))
+		return true;
 	if(!isFormula(str))
 		return false;
 	if(!isDis(str))
@@ -145,6 +170,10 @@ function parse(str) {
 		console.log(big);
 	for (let small of smallset)
 		console.log(small);
+	for (let i = 0; i < smallset.length; i++){
+		if(smallset[i].has('1'))
+		return false;
+	}
 	if(!is_repeat(smallset))
 		return false;
 	return is_not_repeat(bigset);
