@@ -23,30 +23,15 @@ function isDis(str){
 	}
 }
 
-function str_to_bigset(con) {
+function str_to_set(con) {
 	let set_con = new Set();
-	for (let i = 0; i < con.length; i++) {
-		if (symbols.includes(con[i])) {
-			if (con[i - 1] == '!') {
-				set_con.add(con.substr(i - 1, 2));
-			}
-			else set_con.add(con.substr(i, 1));
+	con_list = con.split('&');
+	for(c in con_list){
+		if(set_con.has(con_list[c])){
+			set_con.add('1');
 		}
+		set_con.add(con_list[c]);
 	}
-
-	return set_con;
-}
-
-function str_to_smallset(con) {
-	let set_con = new Set();
-	for (let i = 0; i < con.length; i++) {
-		if (symbols.includes(con[i])) {
-			if(set_con.has(con.substr(i, 1)))
-				set_con.add('1');
-			set_con.add(con.substr(i, 1));
-		}
-	}
-
 	return set_con;
 }
 
@@ -101,21 +86,6 @@ function isFormula(str){
 	}
 }
 
-function deleteSkobka(str){
-	for(let i = 0; i < symbols.length; i++){
-		for(let j = 0; j < str.length; j++){
-			if(str[j] == '(' && str[j + 1] == '!' 
-			&& str[j + 2] == symbols[i] && str[j + 3] == ')'){
-				str = str.substring(0, j) + '!' + symbols[i] + str.substring(j + 4, str.length)
-			}
-		}
-	}
-	str = str.replace(/\(+/g, '(');
-	str = str.replace(/\)+/g, ')');
-	str = str.replace(/\)&|&\(/g, '&');
-	return str;
-}
-
 function isOneSymbol(str){
 	if(str.replace(/[A-Z]/,'').length == 0)
 		return true;
@@ -136,6 +106,8 @@ function isTwoSymbol(str){
 
 function parse(str) {
 	console.log(str);
+	if(!isFormula(str))
+	return false;
 	if (str.replace('f', '') != str){
 		return false;
 	}
@@ -144,39 +116,28 @@ function parse(str) {
 	}
 	if(isTwoSymbol(str))
 		return true;
-	if(!isFormula(str))
-		return false;
 	if(!isDis(str))
 		return false;
-	str = deleteSkobka(str);
-	console.log(str);
-	str = str.replace(/\)\|\(/g, ")(");
-	let bigset = new Array();
-	let smallset = new Array();
-	len = str.length + 1;
-	while (str.length != len) {
-		console.log(str);
-		len = str.length;
-		let first = str.indexOf('(');
-		let second = str.indexOf(')');
-		let con = str.substr(first, second - first + 1);
-		if(str_to_bigset(con).size != 0)
-			bigset.push(str_to_bigset(con));
-		if(str_to_smallset(con).size != 0)
-			smallset.push(str_to_smallset(con));
-		str = str.substr(second - first + 1, str.length);
+	str_list = str.split('|');
+	let big_list = new Array();
+	let small_list = new Array();
+
+	for (s in str_list){
+		str_list[s] = str_list[s].replace(/\)/g, '').replace(/\(/g,'');
+		big_list.push(str_to_set(str_list[s]));
+		small_list.push(str_to_set(str_list[s].replace(/!/g,'')));
 	}
-	for (let big of bigset)
+	for (let big of big_list)
 		console.log(big);
-	for (let small of smallset)
+	for (let small of small_list)
 		console.log(small);
-	for (let i = 0; i < smallset.length; i++){
-		if(smallset[i].has('1'))
+	for (let i = 0; i < small_list.length; i++){
+		if(small_list[i].has('1'))
 		return false;
 	}
-	if(!is_repeat(smallset))
+	if(!is_repeat(small_list))
 		return false;
-	return is_not_repeat(bigset);
+	return is_not_repeat(big_list);
 }
 
 function write_answer(str){

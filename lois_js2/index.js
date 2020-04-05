@@ -1,3 +1,11 @@
+// Лабораторная работа 2 по дисциплине ЛОИС
+// Выполнена студентом группы 721701 БГУИР Коваленко Алексеем Васильевичем
+// Проверить является ли формула СДНФ
+// 24.02.2020
+//
+// https://learn.javascript.ru автор Коваленко Алексей
+//
+
 var symbols = "ABCDEFGHIGKLMNOPQRSTUVWXYZ";
 
 function replaceSymbols(str, arrOfSymbols, arr) {
@@ -6,28 +14,36 @@ function replaceSymbols(str, arrOfSymbols, arr) {
 	for (let i = 0; i < arrOfSymbols.length; i++) {
 		newStr = newStr.replace(new RegExp(arrOfSymbols[i], 'g'), arr[i]);
 	}
-	console.log(newStr);
 	let i = 0;
 	while(newStr.length > 1) {
-		newStr = newStr.replace(new RegExp("!1", 'g'), "0");
-		newStr = newStr.replace(new RegExp("!0", 'g'), "1");
+		newStr = newStr.replace(/!1/g, '0');
+		newStr = newStr.replace(/!0/g, '1');
 
-		newStr = newStr.replace(new RegExp("0\\&0", 'g'), "0");
-		newStr = newStr.replace(new RegExp("0\\&1", 'g'), "0");
-		newStr = newStr.replace(new RegExp("1\\&0", 'g'), "0");
-		newStr = newStr.replace(new RegExp("1\\&1", 'g'), "1");
+		newStr = newStr.replace(/0&0/g, '0');
+		newStr = newStr.replace(/0&1/g, '0');
+		newStr = newStr.replace(/1&0/g, '0');
+		newStr = newStr.replace(/1&1/g, '1');
 
-		newStr = newStr.replace(new RegExp("0\\|0", 'g'), "0");
-		newStr = newStr.replace(new RegExp("0\\|1", 'g'), "1");
-		newStr = newStr.replace(new RegExp("1\\|0", 'g'), "1");
-		newStr = newStr.replace(new RegExp("1\\|1", 'g'), "1");
+		newStr = newStr.replace(/0\|0/g, '0');
+		newStr = newStr.replace(/0\|1/g, '1');
+		newStr = newStr.replace(/1\|0/g, '1');
+		newStr = newStr.replace(/1\|1/g, '1');
 
-		newStr = newStr.replace(new RegExp("\\(0\\)", 'g'), "0");
-		newStr = newStr.replace(new RegExp("\\(1\\)", 'g'), "1");
+		newStr = newStr.replace(/0->0/g, '1');
+		newStr = newStr.replace(/0->1/g, '1');
+		newStr = newStr.replace(/1->0/g, '0');
+		newStr = newStr.replace(/1->1/g, '1');
+
+		newStr = newStr.replace(/0~0/g, '1');
+		newStr = newStr.replace(/0~1/g, '0');
+		newStr = newStr.replace(/1~0/g, '0');
+		newStr = newStr.replace(/1~1/g, '1');
+
+		newStr = newStr.replace(/\(0\)/g,'0');
+		newStr = newStr.replace(/\(1\)/g,'1');
 
 		i++;
 	}
-	console.log(newStr);	
 	arr[arr.length - 1] = newStr;
 }
 
@@ -89,22 +105,52 @@ function createTable(table, arr){
 	}
 }
 
+function isFormula(str){
+	if (str.replace('f', '') != str){
+		return false;
+	}
+	let length = str.length + 1;
+	while (length > str.length){
+		length = str.length;
+		str = str.replace(/\([A-Zf0-1](&|\||->|~)[A-Zf0-1]\)|\(![A-Zf0-1]\)|[A-Zf0-1]/g,"f")
+	}
+	console.log(str);
+	if(str == "f")
+		return true;
+	else {
+		console.log("isFormula")
+		return false;
+	}
+}
 
 
 function parse(str) {
 	symbols = "ABCDEFGHIGKLMNOPQRSTUVWXYZ";
-	str = str.replace(/\s+/g, '');
+	if (!isFormula(str)){
+		document.getElementById("lab").innerHTML = 'Это не формула';
+		if (document.getElementById('tab'))
+			document.getElementById('tab').parentNode.removeChild(document.getElementById('tab'));
+		return null;
+	}
 	let arrOfSymbols = arrOfTable(str);
 	let arr = createArray(arrOfSymbols);
 	for(let i = 1; i < arr.length; i++){
 		replaceSymbols(str, arrOfSymbols, arr[i]);
 	}
+	document.getElementById("lab").innerHTML = '';
+	if (document.getElementById('tab'))
+		document.getElementById('tab').parentNode.removeChild(document.getElementById('tab'));
 	let table = document.querySelector('#table');
-	createTable(table, arr);	
+	tab = document.createElement('table');
+	tab.id = 'tab';
+	table.appendChild(tab)
+	return arr;
 }
 
 function write_answer(str){
-	parse(str);
+	tab = document.createElement('table');
+	arr = parse(str);
+	createTable(tab, arr);
 }
 
 // (A&B)|(A&!B)
